@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>編み図3Dビューア</title>
+<style>
+  :root { --bg:#faf7f2; --fg:#2b2622; --muted:#7a6f66; --card:#fff; --line:#e4ddd3; --accent:#c0563f; --err:#b3261e; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#1d1a18; --fg:#eee7df; --muted:#a89d92; --card:#27231f; --line:#3a342e; --accent:#e07a62; --err:#f2b8b5; }
+  }
+  * { box-sizing: border-box; }
+  html, body { height:100%; }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif; display:flex; flex-direction:column; }
+  header { padding:12px 16px; border-bottom:1px solid var(--line); }
+  h1 { margin:0; font-size:1.2rem; }
+  header p { margin:2px 0 0; color:var(--muted); font-size:.8rem; }
+  main { flex:1; display:grid; grid-template-columns: 360px 1fr; min-height:0; }
+  @media (max-width: 760px) { main { grid-template-columns: 1fr; grid-template-rows: auto 70vh; } }
+  aside { padding:16px; border-right:1px solid var(--line); overflow:auto; }
+  label { display:block; font-size:.78rem; color:var(--muted); margin:12px 0 4px; }
+  select, input, textarea { width:100%; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--fg); font-size:.95rem; }
+  textarea { font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; min-height:220px; line-height:1.5; resize:vertical; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .legend { font-size:.78rem; color:var(--muted); background:var(--card); border:1px solid var(--line); border-radius:6px; padding:8px 10px; margin-top:8px; line-height:1.6; }
+  .legend code { color:var(--fg); }
+  #status { font-size:.8rem; margin-top:8px; white-space:pre-wrap; }
+  #status.err { color:var(--err); }
+  #view { position:relative; min-height:300px; }
+  #view canvas { display:block; width:100%; height:100%; }
+  #hint { position:absolute; right:10px; bottom:8px; font-size:.75rem; color:var(--muted); pointer-events:none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>編み図3Dビューア</h1>
+  <p>編み図を1段ずつ記号で書くと、編み上がりの形を立体で表示します（ドラッグで回転・ホイールで拡大）。</p>
+</header>
+<main>
+  <aside>
+    <label for="preset">サンプル</label>
+    <select id="preset"></select>
+
+    <div class="row">
+      <div>
+        <label for="mode">編み方</label>
+        <select id="mode">
+          <option value="round">輪編み（立体）</option>
+          <option value="flat">往復編み（平面）</option>
+        </select>
+      </div>
+      <div>
+        <label for="yarn">糸の太さ</label>
+        <select id="yarn">
+          <option value="0.6">極細</option>
+          <option value="0.8">合太</option>
+          <option value="1" selected>並太</option>
+          <option value="1.4">極太</option>
+        </select>
+      </div>
+    </div>
+
+    <label for="chart">編み図（1行＝1段）</label>
+    <textarea id="chart" spellcheck="false"></textarea>
+    <div class="legend">
+      <code>×</code> 細編み　<code>T</code> 中長編み　<code>F</code> 長編み<br>
+      <code>V</code> 2目編み入れ（増し目）　<code>W</code> 3目編み入れ<br>
+      <code>Λ</code>（または <code>A</code>）2目一度（減目）<br>
+      <code>×6</code> 6回くり返し、<code>(× V)*6</code> かっこ内を6回<br>
+      行頭の「1段:」などは無視、<code>#色</code> でその段の色を指定（例 <code>#ffffff</code>）<br>
+      <code>//</code> 以降はコメント
+    </div>
+
+    <div class="row">
+      <div><label for="color">糸の色</label><input id="color" type="color" value="#d9826a"></div>
+      <div><label for="bg">背景</label><input id="bg" type="color" value="#f3eee6"></div>
+    </div>
+    <div id="status"></div>
+  </aside>
+  <section id="view"><div id="hint">ドラッグ: 回転 / ホイール: 拡大 / 右ドラッグ: 移動</div></section>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
